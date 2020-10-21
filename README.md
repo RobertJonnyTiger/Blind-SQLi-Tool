@@ -2,7 +2,7 @@
 auto_SQLi, an automatic blind SQLi Tool that dumps tables from POST or GET requests.
 
 ## Usage:
-1. Copy a request from a webpage that you try the BSQLi on.
+1. Copy a request from a webpage that you try the BSQLi on. (Check examples for how it should look)
 2. Save the request to a file (This file will be used by the tool)
 3. run `python3 auto_SQLi.py <request file> <common tables wordlist> <common columns wordlist>`
 4. See results in the output file `table.txt`.
