@@ -87,7 +87,6 @@ url = Destination of the request."""
 	url         = local_base + destination
 	if METHOD == "POST":
 		parameters = post_data.strip()
-		print(parameters)
 		param      = parameters[:parameters.index("=")]
 		return param, url
 	if METHOD == "GET":
