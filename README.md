@@ -22,6 +22,6 @@ auto_SQLi, an automatic blind SQLi Tool that dumps tables from POST or GET reque
 ## Requirements:
 * bs4
 * Python 3
-* Burpee
+* Burpee module. (Added in Main branch)
 * urllib.parse
 * argparse
